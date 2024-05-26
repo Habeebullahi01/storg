@@ -3,7 +3,7 @@
 - sort files according to type(video, audio)
 - rename files in a directory with or without a prefix
 - use concurrency
-- add timer
+- add timer✅
 
 #### Commands
 
