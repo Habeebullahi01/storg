@@ -2,6 +2,12 @@
 
 This is Storg, a CLI program that helps to sort files in a directory into sub-directories based on their file extensions.
 
+## Installation
+
+- Download the binary compatible with your machine from the release page.
+- Add the download location to the system path variable, or move the binary to a location already in the path.
+- Rename the binary to _storg_ for convenience.
+
 ## Usage
 
 ```sh
