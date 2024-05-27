@@ -1,10 +1,14 @@
 # Storg
 
-This is Storg, a CLI program that helps to sort files in a directory into sub-directories based on their file extensions.
+This is Storg, a CLI program that helps to sort files in a directory into sub-directories based on their media type and file extensions.
+
+## Use Case
+
+Imagine a directory containing files of various media types; images, audios, videos and so on. Now you'd like to sort the contents  of this directory into sub-directories based on their media types, so you'd have all the images neatly separated in one sub-directory and videos in another sub-directory, and (equally) so on. This tool helps you do exactly that.
 
 ## Installation
 
-- Download the binary compatible with your machine from the release page.
+- Download the binary compatible with your machine from the [releases](https://github.com/Habeebullahi01/storg/releases/) page.
 - Add the download location to the system path variable, or move the binary to a location already in the path.
 - Rename the binary to _storg_ for convenience.
 

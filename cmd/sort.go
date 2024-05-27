@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io/fs"
 	"log"
+	"mime"
 	"os"
 	"path/filepath"
 	"strings"
@@ -63,9 +64,6 @@ func sortFunction(srcDir, tarDir string) {
 	if err != nil {
 		log.Fatal("The source directory does not exist!")
 	}
-	// else {
-	// 	fmt.Println("Source exists!")
-	// }
 
 	// the files in the directory
 	fileEntries := make([]fs.DirEntry, 0)
@@ -76,28 +74,81 @@ func sortFunction(srcDir, tarDir string) {
 		}
 	}
 
-	// create a folder for every extension if one doesn't already exist
 	for _, entry := range fileEntries {
 		// fmt.Printf("entry number %d is %s \n", index, entry.Name())
 		ext := filepath.Ext(entry.Name())
-		ext = strings.Trim(ext, ".")
-		// create folder within targetDir if it doesn't already exist
-		if _, err := os.ReadDir(tarDir + "/" + ext); err != nil {
-			os.Mkdir(tarDir+"/"+ext, os.ModeDevice)
-			fmt.Printf("%s folder created for %s files.\n", ext, ext)
-			// then copy file into the folder
-			fc, _ := os.ReadFile(entry.Name())
-			if err := os.WriteFile(tarDir+"/"+ext+"/"+entry.Name(), fc, 0600); err != nil {
-				log.Fatal("Unable to write file" + entry.Name())
+		// ext = strings.Trim(ext, ".")
+
+		// determine file type
+		fileType := mime.TypeByExtension(ext)
+
+		// if fileType is empty: add file to 'other' subdirectory
+		if fileType != "" {
+			// media type is included in 'mime' package
+			mediaType, fileExtension := strings.Split(fileType, "/")[0], strings.Split(fileType, "/")[1]
+
+			// check whether sub-directory for file 'media type' exists
+			if _, err := os.ReadDir(filepath.Join(tarDir, mediaType)); err != nil {
+				// create it if it doesn't
+				os.Mkdir(filepath.Join(tarDir, mediaType), os.ModeDevice)
+				// fmt.Printf("other folder created for unknown file type.\n")
+
+				// create sub-directory for file extension
+				os.Mkdir(filepath.Join(tarDir, mediaType, fileExtension), os.ModeDevice)
+
+				// then copy file into the folder
+				fc, _ := os.ReadFile(entry.Name())
+				if err := os.WriteFile(filepath.Join(tarDir, mediaType, fileExtension, entry.Name()), fc, 0600); err != nil {
+					log.Fatal("Unable to write file" + entry.Name())
+				}
+				fmt.Printf("%s added to %s folder \n", entry.Name(), mediaType)
+			} else {
+				// check whether sub-directory for 'file extension' exists
+				if _, err := os.ReadDir(filepath.Join(tarDir, mediaType, fileExtension)); err != nil {
+					// create it if it does not
+					os.Mkdir(filepath.Join(tarDir, mediaType, fileExtension), os.ModeDevice)
+
+					// then copy file into the folder
+					fc, _ := os.ReadFile(entry.Name())
+					if err := os.WriteFile(filepath.Join(tarDir, mediaType, fileExtension, entry.Name()), fc, 0600); err != nil {
+						log.Fatal("Unable to write file" + entry.Name())
+					}
+					fmt.Printf("%s added to %s folder \n", entry.Name(), mediaType)
+				} else {
+
+					// just copy file into existing folder
+					fc, _ := os.ReadFile(entry.Name())
+					if err := os.WriteFile(filepath.Join(tarDir, mediaType, fileExtension, entry.Name()), fc, 0600); err != nil {
+						log.Fatal("Unable to write file" + entry.Name())
+					}
+					fmt.Printf("%s added to %s folder \n", entry.Name(), mediaType)
+				}
 			}
-			fmt.Printf("%s added to %s folder \n", entry.Name(), ext)
 		} else {
-			// just copy file into existing folder
-			fc, _ := os.ReadFile(entry.Name())
-			if err := os.WriteFile(tarDir+"/"+ext+"/"+entry.Name(), fc, 0600); err != nil {
-				log.Fatal("Unable to write file" + entry.Name())
+			// For media types not found in the 'mime' package
+
+			// check if 'other' sub-directory already exists
+			if _, err := os.ReadDir(filepath.Join(tarDir, "other")); err != nil {
+				// create 'other' sub-directory
+				os.Mkdir(filepath.Join(tarDir, "other"), os.ModeDevice)
+				fmt.Printf("other folder created for %s files.\n", strings.Trim(ext, "."))
+
+				// then copy file into sub-directory
+				fc, _ := os.ReadFile(entry.Name())
+				if err := os.WriteFile(filepath.Join(tarDir, "other", entry.Name()), fc, 0600); err != nil {
+					log.Fatal("Unable to write file: " + entry.Name())
+				} else {
+					fmt.Printf("%s added to 'other' folder \n", entry.Name())
+				}
+			} else {
+				// just copy file into existing 'other' sub-directory
+				fc, _ := os.ReadFile(entry.Name())
+				if err := os.WriteFile(filepath.Join(tarDir, "other", entry.Name()), fc, 0600); err != nil {
+					log.Fatal("Unable to write file" + entry.Name())
+				} else {
+					fmt.Printf("%s added to 'other' folder \n", entry.Name())
+				}
 			}
-			fmt.Printf("%s added to %s folder \n", entry.Name(), ext)
 		}
 	}
 
