@@ -19,7 +19,7 @@ import (
 var renameCmd = &cobra.Command{
 	Use:   "rename",
 	Short: "Rename files in a directory.",
-	Long:  `The 'rename' command is used to rename the files in a directory in lexicographical order using numbers and an optional prefix.`,
+	Long:  `This command allows users to rename all files in a specified directory by numbering them sequentially. Additionally, users can add an optional prefix to the filenames, providing greater flexibility and organization. This feature is particularly useful for managing large sets of files, ensuring consistent and meaningful naming conventions.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		sourceDir, _ := cmd.Flags().GetString("srcDir")
 		targetDir, _ := cmd.Flags().GetString("tarDir")
@@ -73,12 +73,19 @@ func rename(srcDir, tarDir, prefix string) {
 			if err := os.Mkdir(tarDir, fs.ModeDevice); err != nil { // -> create new directory inside the source directory
 				// Unable to create directory
 				log.Fatal("Error creating sub-directory for renamed files.")
+			} else {
+				fmt.Println("New directory created")
 			}
-			fmt.Println("New directory created")
 		}
 	} else if _, err := os.ReadDir(tarDir); err != nil {
 		// specified target directory does not exist or some other reason
-		log.Fatal(err.Error())
+		if err := os.Mkdir(tarDir, fs.ModeDevice); err != nil { // -> create the directory
+			// Unable to create directory
+			fmt.Println(err.Error())
+			log.Fatal("Error creating sub-directory for renamed files.")
+		} else {
+			fmt.Println("New directory created")
+		}
 	}
 
 	fileNumber := 1
