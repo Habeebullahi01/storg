@@ -32,7 +32,41 @@ storg [command] [flags]
 
     - srcDir
         -
+        ```sh
+        storg sort --srcDir|-s
+        ```
         This is used to specify the directory where the files to be sorted are located. Its default value is the working directory from which the command is being used. This flag is optional.
     - tarDir
         -
+        ```sh
+        storg sort --tarDir|-t
+        ```
         This is used to specify the directory in which the sub-directories which will be created should be located. It also defaults to the working directory from which the command is being used. This flag is also optional.
+
+- rename
+    - 
+    This command allows users to rename all files in a specified directory by numbering them sequentially. Additionally, users can add an optional prefix to the filenames, providing greater flexibility and organization. This feature is particularly useful for managing large sets of files, ensuring consistent and meaningful naming conventions.
+    ```sh
+    storg rename [flags]
+    ```
+
+    ### Flags
+
+    - srcDir(-s)
+        -
+        ```sh
+        storg rename --srcDir|-s
+        ```
+        This is the directory containing the files to be renamed. If unspecified it defaults to the location from which the command is being used.
+    - tarDir(-t)
+        -
+        ```sh
+        storg rename --tarDir|-t
+        ```
+        This is the directory into which the renamed files should be copied. The specified directory will be created if it does not already exist. If unspecified, it defaults to a sub-directory called 'renamed files' inside the source directory.
+    - prefix(-p)
+        -
+        ```sh
+        storg rename --prefix|-p
+        ```
+        This is an optional prefix to be added to the renamed files for greater organisation.
